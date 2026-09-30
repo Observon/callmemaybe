@@ -408,6 +408,9 @@ class ConstrainedDecoder:
 
             # Build mask: for each token, check if buf + token is valid prefix
             valid_mask = self._build_mask(json_buf, param_names, param_types)
+            if len(valid_mask) < len(logits_arr):
+                pad = np.zeros(len(logits_arr) - len(valid_mask), dtype=bool)
+                valid_mask = np.concatenate([valid_mask, pad])
             logits_arr[~valid_mask] = -math.inf
 
             if not np.any(np.isfinite(logits_arr)):
